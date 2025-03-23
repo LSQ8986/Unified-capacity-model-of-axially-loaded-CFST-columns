@@ -93,6 +93,8 @@
        .file-input-group {
             margin-bottom: 15px;
             text-align: center;
+            color: red;
+            font-weight: bold;
         }
 
        .file-input-group label {
@@ -167,8 +169,7 @@
         <button onclick="calculateSingle()">单根计算（Single calculation）</button>
         <div class="result" id="singleResult"></div>
         <div class="separator"></div>
-        <div class="file-input-group">
-            <label>上传 txt 或 Excel 文件进行批量计算 (格式：<i>f</i><sub>y</sub>, <i>f</i><sub>c</sub>, <i>b</i>, <i>h</i>, <i>t</i>, <i>r</i><sub>0</sub>, <i>L</i>)</label>
+        <div class="file-input-group">            
             <label>Upload txt or Excel file for Batch Processing (Format: <i>f</i><sub>y</sub>, <i>f</i><sub>c</sub>, <i>b</i>, <i>h</i>, <i>t</i>, <i>r</i><sub>0</sub>, <i>L</i>)</label>
             <input type="file" id="fileInput" accept=".txt, .xlsx, .xls" value="Choose File">
         </div>
