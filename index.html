@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2YCZ7VZMBC"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-2YCZ7VZMBC');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified capacity model of axially loaded CFST with different sectional shapes</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+
+       .header {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+       .header h1 {
+            /* 修改标题字体大小 */
+            font-size: 24px;
+        }
+
+       .logo {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 90%;
+            max-width: 600px;
+        }
+
+       .logo img {
+            max-width: 100%;
+            height: auto;
+        }
+
+       .input-note-section {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 90%;
+            max-width: 600px;
+            box-sizing: border-box;
+        }
+
+       .input-group {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+       .input-group label {
+            flex: 1;
+            text-align: center;
+            margin-right: 10px;
+            line-height: 32px;
+        }
+
+       .input-group input {
+            flex: 1.5;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            /* 新增：让按钮居中 */
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+       .result {
+            margin-top: 10px;
+            /* 新增：让结果居中 */
+            text-align: center;
+            /* 新增：设置结果字体为红色粗体，比参数字体大 1 号 */
+            color: red;
+            font-weight: bold;
+            font-size: 22px;
+        }
+
+       .file-input-group {
+            margin-bottom: 15px;
+            text-align: center;
+            color: red;
+            font-weight: bold;
+            font-size: 22px;
+        }
+
+       .file-input-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+       .file-input-group input[type="file"] {
+            margin-top: 5px;
+        }
+
+       .separator {
+            border-top: 1px solid #ccc;
+            margin: 20px 0;
+        }
+
+       .note {
+            margin-top: 20px;
+            font-size: 16px;
+            text-align: justify;
+        }
+
+        /* 新增下载按钮样式 */
+       .download-button {
+            background-color: #28a745;
+        }
+
+       .download-button:hover {
+            background-color: #218838;
+        }
+
+       .visit-count {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Unified Capacity Model of Axially Loaded CFST Columns with Different Shapes</h1>
+    </div>
+    <div class="logo">
+        <!-- 使用占位符图片，实际使用时替换为真实的 Logo 图片 -->
+        <img src="Equivalent columns_Final.jpg" alt="Logo">
+    </div>
+    <div class="input-note-section">
+        <div class="input-group">
+            <label for="fy">Steel strength <i>f</i><sub>y</sub> (MPa):</label>
+            <input type="number" id="fy" required>
+        </div>
+        <div class="input-group">
+            <label for="fc">Concrete strength <i>f</i><sub>c</sub> (MPa):</label>
+            <input type="number" id="fc" required>
+        </div>
+        <div class="input-group">
+            <label for="b">Sectional width <i>b</i> (mm):</label>
+            <input type="number" id="b" required>
+        </div>
+        <div class="input-group">
+            <label for="h">Sectional height <i>h</i> (mm):</label>
+            <input type="number" id="h" required>
+        </div>
+        <div class="input-group">
+            <label for="t">Steel thickness <i>t</i> (mm):</label>
+            <input type="number" id="t" required>
+        </div>
+        <div class="input-group">
+            <label for="r0">Outer corner radii <i>r</i><sub>0</sub> (mm):</label>
+            <input type="number" id="r0" required>
+        </div>
+        <div class="input-group">
+            <label for="L">Column length <i>L</i> (mm):</label>
+            <input type="number" id="L" required>
+        </div>
+        <button onclick="calculateSingle()">单根计算（Single calculation）</button>
+        <div class="result" id="singleResult"></div>
+        <div class="separator"></div>
+        <div class="file-input-group">
+            <label>Upload txt or Excel file for Batch Processing </label>
+            <label>(Format: <i>f</i><sub>y</sub>, <i>f</i><sub>c</sub>, <i>b</i>, <i>h</i>, <i>t</i>, <i>r</i><sub>0</sub>, <i>L</i>)</label>
+            <input type="file" id="fileInput" accept=".txt, .xlsx, .xls" value="Choose File">
+        </div>
+        <button onclick="calculateBatch()">批量计算（Batch calculation）</button>
+        <div class="result" id="batchResult"></div>
+        <!-- 修改按钮样式 -->
+        <button id="downloadButton" class="download-button" style="display: none;" onclick="downloadExcel()">下载计算结果（Download Results）</button>
+        <div class="separator"></div>
+        <div class="note">
+            The model is developed based on the following references:
+            <br>[1].Siqi Lin, Yan-Gang Zhao, Zhao-Hui Lu, Xi-Feng Yan. Unified Theoretical Model for Axially Loaded Concrete-Filled Steel Tube Stub Columns with Different Cross-Sectional Shapes. Journal of Structural Engineering-ASCE, 2021, 147(10): 04021159.
+            <br>[2].Siqi Lin, Yan-Gang Zhao, Zhao-hui Lu. Fibre beam element models for nonlinear analysis of concentrically loaded circular CFT columns considering the size effect. Engineering Structures, 2020, 210: 110400.
+        </div>
+    </div>
+    <div class="visit-count" id="visitCount"></div>
+    <script>
+        // 访问量统计
+        function updateVisitCount() {
+            let visitCount = localStorage.getItem('visitCount');
+            if (!visitCount) {
+                visitCount = 1;
+            } else {
+                visitCount = parseInt(visitCount) + 1;
+            }
+            localStorage.setItem('visitCount', visitCount);
+            document.getElementById('visitCount').innerHTML = `当前访问量(visitCount): ${visitCount}`;
+        }
+
+        window.onload = function () {
+            updateVisitCount();
+        };
+
+        function calculateSingle() {
+            const fy = parseFloat(document.getElementById('fy').value);
+            const fc = parseFloat(document.getElementById('fc').value);
+            const b = parseFloat(document.getElementById('b').value);
+            const h = parseFloat(document.getElementById('h').value);
+            const t = parseFloat(document.getElementById('t').value);
+            const r0 = parseFloat(document.getElementById('r0').value);
+            const L = parseFloat(document.getElementById('L').value);
+
+            if (isNaN(fy) || isNaN(fc) || isNaN(b) || isNaN(h) || isNaN(t) || isNaN(r0) || isNaN(L) || b < h) {
+                document.getElementById('singleResult').innerHTML = '请输入有效的数值，且 <i>b</i> ≥ <i>h</i>。';
+                return;
+            }
+
+            const D = h;
+            const ita = 2 * t / (D - 2 * t) * fy / fc;
+            const Rd_cc = Math.pow(1.67, Math.pow(1 + ita, -8)) * Math.pow((D - 2 * t), -(0.112 * Math.pow(0.0005, ita)));
+            const fcm = fc * Rd_cc * (1 + 52 * Math.pow(fy, 0.1) * Math.pow(fc, -0.85) * Math.pow((D / t), -0.6));
+            const fsm = 1.53 * Math.pow(fy, -0.05) * (1 - 0.002 * D / t) * fy;
+            const Acc = Math.PI * Math.pow((D / 2 - t), 2);
+            const Asc = Math.PI * Math.pow((D / 2), 2) - Acc;
+            const Nuc = fcm * Acc + fsm * Asc;
+            const fr = 1 + 0.003 * fc * (1 - Math.exp(r0 / h - 0.5));
+            const fa = 1 + (0.002 * fc + 0.62) * (b / h - 1);
+
+            const Es = 200000;
+            const Is = Math.PI * (Math.pow(D, 4) - Math.pow(D - 2 * t, 4)) / 64;
+            const Ec = 22000 * Math.pow((fc + 8) / 10, 0.3);
+            const Ic = Math.PI * Math.pow(D - 2 * t, 4) / 64;
+            const Ncr = Math.pow(Math.PI, 2) * (Es * Is + 0.6 * Ec * Ic) / Math.pow(L, 2);
+            const N0 = fy * Asc + fc * Acc;
+            const naga = Math.pow(N0 / Ncr, 0.5);
+            const Rd_s = Math.min(1.2 * Math.exp(-0.7 * naga), 1);
+
+            const Nu = Rd_s * fr * fa * Nuc / 1000;
+
+            document.getElementById('singleResult').innerHTML = `Axial load-bearing capacity <i>N</i><sub>u</sub> = ${Nu.toFixed(2)} kN`;
+        }
+
+        function calculateBatch() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                document.getElementById('batchResult').innerHTML = '请选择一个文件(Please choose a file)';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                let jsonData;
+                if (file.name.endsWith('.txt')) {
+                    const text = e.target.result;
+                    const lines = text.split('\n');
+                    jsonData = lines.map(line => {
+                        line = line.trim();
+                        if (line) {
+                            return line.split(/[,\s]+/).map(item => {
+                                item = item.trim();
+                                return parseFloat(item);
+                            });
+                        }
+                        return null;
+                    }).filter(line => line!== null);
+                } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                }
+
+                const results = [];
+                results.push(['fy (MPa)', 'fc (MPa)', 'b (mm)', 'h (mm)', 't (mm)', 'r0 (mm)', 'L (mm)', 'Nu (kN)']);
+
+                for (let i = 0; i < jsonData.length; i++) {
+                    const row = jsonData[i];
+                    if (row.length < 7) {
+                        results.push([...row, '数据项不足']);
+                        continue;
+                    }
+                    const fy = parseFloat(row[0]);
+                    const fc = parseFloat(row[1]);
+                    const b = parseFloat(row[2]);
+                    // 后续代码省略，因为没有完整提供
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function downloadExcel() {
+            // 下载 Excel 文件的逻辑
+        }
+    </script>
+</body>
+
+</html>
