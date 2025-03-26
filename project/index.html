@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified capacity model of axially loaded CFST with different sectional shapes</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        // 获取访问计数
+        fetch('data.json')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('visitCount').textContent = `访问次数：${data.visitCount}`;
+            })
+            .catch(error => console.error('Error:', error));
+    </script>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Unified Capacity Model of Axially Loaded CFST Columns with Different Shapes</h1>
+    </div>
+    <div class="logo">
+        <img src="images/Equivalent columns_Final.jpg" alt="Logo">
+    </div>
+    <div class="input-note-section">
+        <div class="input-group">
+            <label for="fy">Steel strength <i>f</i><sub>y</sub> (MPa):</label>
+            <input type="number" id="fy" required>
+        </div>
+        <div class="input-group">
+            <label for="fc">Concrete strength <i>f</i><sub>c</sub> (MPa):</label>
+            <input type="number" id="fc" required>
+        </div>
+        <div class="input-group">
+            <label for="b">Sectional width <i>b</i> (mm):</label>
+            <input type="number" id="b" required>
+        </div>
+        <div class="input-group">
+            <label for="h">Sectional height <i>h</i> (mm):</label>
+            <input type="number" id="h" required>
+        </div>
+        <div class="input-group">
+            <label for="t">Steel thickness <i>t</i> (mm):</label>
+            <input type="number" id="t" required>
+        </div>
+        <div class="input-group">
+            <label for="r0">Outer corner radii <i>r</i><sub>0</sub> (mm):</label>
+            <input type="number" id="r0" required>
+        </div>
+        <div class="input-group">
+            <label for="L">Column length <i>L</i> (mm):</label>
+            <input type="number" id="L" required>
+        </div>
+        <button onclick="calculateSingle()">单根计算（Single calculation）</button>
+        <div class="result" id="singleResult"></div>
+        <div class="separator"></div>
+        <div class="file-input-group">
+            <label>Upload txt or Excel file for Batch Processing </label>
+            <label>(Format: <i>f</i><sub>y</sub>, <i>f</i><sub>c</sub>, <i>b</i>, <i>h</i>, <i>t</i>, <i>r</i><sub>0</sub>, <i>L</i>)</label>
+            <input type="file" id="fileInput" accept=".txt, .xlsx, .xls" value="Choose File">
+        </div>
+        <button onclick="calculateBatch()">批量计算（Batch calculation）</button>
+        <div class="result" id="batchResult"></div>
+        <button id="downloadButton" class="download-button" style="display: none;" onclick="downloadExcel()">下载计算结果（Download Results）</button>
+        <div class="separator"></div>
+        <div class="note">
+            The model is developed based on the following references:
+            <br>[1].Siqi Lin, Yan-Gang Zhao, Zhao-Hui Lu, Xi-Feng Yan. Unified Theoretical Model for Axially Loaded Concrete-Filled Steel Tube Stub Columns with Different Cross-Sectional Shapes. Journal of Structural Engineering-ASCE, 2021, 147(10): 04021159.
+            <br>[2].Siqi Lin, Yan-Gang Zhao, Zhao-hui Lu. Fibre beam element models for nonlinear analysis of concentrically loaded circular CFT columns considering the size effect. Engineering Structures, 2020, 210: 110400.
+        </div>
+    </div>
+    <div class="visit-count" id="visitCount"></div>
+    
+    <script src="js/calculations.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html> 
