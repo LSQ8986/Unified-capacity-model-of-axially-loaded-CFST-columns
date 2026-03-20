@@ -6,131 +6,286 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unified capacity model of axially loaded CFST with different sectional shapes</title>
     <style>
-        body {
-            font-family: 'Times New Roman', serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        /* Modern CSS Reset & Base Styles */
+        * {
             margin: 0;
-            background-color: #f4f4f9;
-        }
-
-       .header {
-            text-align: center;
-            padding: 20px 0;
-        }
-
-       .logo {
-            text-align: center;
-            margin-bottom: 20px;
-            width: 90%;
-            max-width: 600px;
-        }
-
-       .logo img {
-            max-width: 100%;
-            height: auto;
-        }
-
-       .input-note-section {
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            width: 90%;
-            max-width: 600px;
+            padding: 0;
             box-sizing: border-box;
         }
 
-       .input-group {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 20px;
+            color: #2c3e50;
+            line-height: 1.5;
         }
 
-       .input-group label {
-            flex: 1;
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Section */
+        .header {
             text-align: center;
-            margin-right: 10px;
-            line-height: 32px;
+            color: #2c3e50;
+            margin: 0 auto 20px auto;
+            padding: 15px 0;
+            max-width: 800px;
         }
 
-       .input-group input {
-            flex: 1.5;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+        .header h1 {
+            font-size: 2.0rem;
+            font-weight: 400;
+            margin-bottom: 10px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        .header .subtitle {
+            font-size: 2.0rem;
+            font-weight: 400;
+            opacity: 0.9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Logo/Image Section */
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 0 20px;
+        }
+
+        .logo img {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .logo img:hover {
+            transform: translateY(-3px);
+        }
+
+        /* Main Card */
+        .input-note-section {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            padding: 30px;
+            margin: 0 auto 20px auto;
+            max-width: 800px;
+        }
+
+        /* Input Groups */
+        .input-group {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .input-group:hover {
+            background: #e9ecef;
+            border-color: #007BFF;
+            transform: translateY(-1px);
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #007BFF;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+        }
+
+        /* Buttons */
         button {
-            padding: 10px 20px;
-            background-color: #007BFF;
+            padding: 12px 28px;
+            background: #3498db;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
-            margin-top: 10px;
-            /* 新增：让按钮居中 */
+            font-size: 1rem;
+            font-weight: 500;
+            margin: 15px auto;
             display: block;
-            margin-left: auto;
-            margin-right: auto;
+            transition: all 0.2s ease;
         }
 
         button:hover {
-            background-color: #0056b3;
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
         }
 
-       .result {
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Download Button */
+        .download-button {
+            background: #27ae60;
+        }
+
+        .download-button:hover {
+            background: #229954;
+        }
+
+        /* Results */
+        .result {
+            margin: 15px 0;
+            text-align: center;
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        /* File Input Group */
+        .file-input-group {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px dashed #bdc3c7;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .file-input-group:hover {
+            background: #e9ecef;
+            border-color: #95a5a6;
+        }
+
+        .file-input-group label {
+            color: #856404;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .file-input-group input[type="file"] {
             margin-top: 10px;
-            /* 新增：让结果居中 */
-            text-align: center;
-            /* 新增：设置结果字体为红色粗体，比参数字体大 1 号 */
-            color: red;
-            font-weight: bold;
-            font-size: 22px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #ddd;
         }
 
-       .file-input-group {
-            margin-bottom: 15px;
-            text-align: center;
-            color: red;
-            font-weight: bold;
-            font-size: 22px;
+        /* Separator */
+        .separator {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #ccc, transparent);
+            margin: 30px 0;
+            border: none;
         }
 
-       .file-input-group label {
+        /* Notes */
+        .note {
+            margin-top: 30px;
+            padding: 20px;
+            background: #e7f3ff;
+            border-left: 4px solid #007BFF;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .note br {
             display: block;
-            margin-bottom: 5px;
+            margin: 8px 0;
         }
 
-       .file-input-group input[type="file"] {
-            margin-top: 5px;
-        }
-
-       .separator {
-            border-top: 1px solid #ccc;
-            margin: 20px 0;
-        }
-
-       .note {
-            margin-top: 20px;
-            font-size: 16px;
-            text-align: justify;
-        }
-
-        /* 新增下载按钮样式 */
-       .download-button {
-            background-color: #28a745;
-        }
-
-       .download-button:hover {
-            background-color: #218838;
-        }
-
-       .visit-count {
+        /* Visitor Counter */
+        .visit-count {
             text-align: center;
-            margin-top: 20px;
-            font-size: 18px;
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            font-size: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .input-note-section {
+                padding: 25px;
+            }
+            
+            button {
+                padding: 12px 24px;
+                width: 100%;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .input-note-section {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Single Calculation Section */
+        .single-calc-section {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        /* Parameter table items */
+        .single-calc-section div > div {
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+
+        .single-calc-section div > div:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -138,49 +293,49 @@
 </head>
 
 <body>
-    <div class="header">
-        <h1>Unified Capacity Model of Axially Loaded CFST Columns with Different Shapes</h1>
-    </div>
-    <div class="logo">
-        <!-- 使用占位符图片，实际使用时替换为真实的 Logo 图片 -->
-        <img src="Equivalent columns_Final.jpg" alt="Logo">
-    </div>
-    <div class="input-note-section">
-        <div class="input-group">
-            <label for="fy">Steel strength <i>f</i><sub>y</sub> (MPa):</label>
-            <input type="number" id="fy" required>
+    <div class="container">
+        <div class="header">
+            <h1>Unified Capacity Model of Axially Loaded CFST Columns</h1>
+            <div class="subtitle">with Different Sectional Shapes</div>
         </div>
-        <div class="input-group">
-            <label for="fc">Concrete strength <i>f</i><sub>c</sub> (MPa):</label>
-            <input type="number" id="fc" required>
+        
+        <div class="logo">
+            <!-- 使用占位符图片，实际使用时替换为真实的 Logo 图片 -->
+            <img src="Equivalent columns_Final.jpg" alt="Logo">
         </div>
-        <div class="input-group">
-            <label for="b">Sectional width <i>b</i> (mm):</label>
-            <input type="number" id="b" required>
+        
+        <div class="input-note-section">
+        
+        <!-- Single Calculation Section -->
+        <div class="single-calc-section">
+            <!-- Parameter Reference Table -->
+            <div style="background: #f8f9fa; border-radius: 6px; padding: 15px; margin-bottom: 15px; text-align: center;">
+                <h3 style="margin: 0 0 12px 0; color: #2c3e50; font-size: 1.4rem; font-family: 'Times New Roman', serif;">Parameter Reference</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 1.05rem; font-family: 'Times New Roman', serif;">
+                    <div><strong><i>f</i><sub>y</sub></strong>: Steel strength (MPa)</div>
+                    <div><strong><i>f</i><sub>c</sub></strong>: Concrete strength (MPa)</div>
+                    <div><strong><i>b</i></strong>: Sectional width (mm)</div>
+                    <div><strong><i>h</i></strong>: Sectional height (mm)</div>
+                    <div><strong><i>t</i></strong>: Steel thickness (mm)</div>
+                    <div><strong><i>r</i><sub>0</sub></strong>: Outer corner radii (mm)</div>
+                    <div><strong><i>L</i></strong>: Column length (mm)</div>
+                </div>
+            </div>
+            
+            <!-- Unified style input area matching batch calculation -->
+            <div class="file-input-group">
+                <label style="font-family: 'Times New Roman', serif; margin-bottom: 10px; font-size: 1.1rem;">Parameters input [<i>f</i><sub>y</sub> (MPa), <i>f</i><sub>c</sub>(MPa), <i>b</i>(mm), <i>h</i>(mm), <i>t</i>(mm), <i>r</i><sub>0</sub>(mm), <i>L</i>(mm)]</label>
+                <input type="text" id="singleInput" placeholder="Enter parameters separated by comma or space" required style="font-family: 'Times New Roman', serif; font-size: 1.1rem; padding: 15px; width: 100%;">
+            </div>
+            <button onclick="calculateSingle()">单根计算（Single calculation）</button>
+            <div class="result" id="singleResult"></div>
         </div>
-        <div class="input-group">
-            <label for="h">Sectional height <i>h</i> (mm):</label>
-            <input type="number" id="h" required>
-        </div>
-        <div class="input-group">
-            <label for="t">Steel thickness <i>t</i> (mm):</label>
-            <input type="number" id="t" required>
-        </div>
-        <div class="input-group">
-            <label for="r0">Outer corner radii <i>r</i><sub>0</sub> (mm):</label>
-            <input type="number" id="r0" required>
-        </div>
-        <div class="input-group">
-            <label for="L">Column length <i>L</i> (mm):</label>
-            <input type="number" id="L" required>
-        </div>
-        <button onclick="calculateSingle()">单根计算（Single calculation）</button>
-        <div class="result" id="singleResult"></div>
+        
         <div class="separator"></div>
         <div class="file-input-group">
-            <label>Upload txt or Excel file for Batch Processing </label>
-            <label>(Format: <i>f</i><sub>y</sub>, <i>f</i><sub>c</sub>, <i>b</i>, <i>h</i>, <i>t</i>, <i>r</i><sub>0</sub>, <i>L</i>)</label>
-            <input type="file" id="fileInput" accept=".txt, .xlsx, .xls" value="Choose File">
+            <label style="font-family: 'Times New Roman', serif; font-size: 1.1rem;">Upload txt or Excel file for Batch Processing </label>
+            <label style="font-family: 'Times New Roman', serif; font-size: 1.1rem;">(Format: <i>f</i><sub>y</sub>, <i>f</i><sub>c</sub>, <i>b</i>, <i>h</i>, <i>t</i>, <i>r</i><sub>0</sub>, <i>L</i>)</label>
+            <input type="file" id="fileInput" accept=".txt, .xlsx, .xls" value="Choose File" style="font-family: 'Times New Roman', serif;">
         </div>
         <button onclick="calculateBatch()">批量计算（Batch calculation）</button>
         <div class="result" id="batchResult"></div>
@@ -289,16 +444,30 @@
         })();
 
         function calculateSingle() {
-            const fy = parseFloat(document.getElementById('fy').value);
-            const fc = parseFloat(document.getElementById('fc').value);
-            const b = parseFloat(document.getElementById('b').value);
-            const h = parseFloat(document.getElementById('h').value);
-            const t = parseFloat(document.getElementById('t').value);
-            const r0 = parseFloat(document.getElementById('r0').value);
-            const L = parseFloat(document.getElementById('L').value);
+            const inputText = document.getElementById('singleInput').value.trim();
+            if (!inputText) {
+                document.getElementById('singleResult').innerHTML = '请输入参数 (Please enter parameters)';
+                return;
+            }
+
+            // 使用 splitParams 解析输入，支持多种分隔符
+            const params = splitParams(inputText);
+            
+            if (params.length < 7) {
+                document.getElementById('singleResult').innerHTML = `参数不足，需要7个数值 (Insufficient parameters, 7 values required). 当前输入: ${params.length}个数值`;
+                return;
+            }
+
+            const fy = parseFloat(params[0]);
+            const fc = parseFloat(params[1]);
+            const b = parseFloat(params[2]);
+            const h = parseFloat(params[3]);
+            const t = parseFloat(params[4]);
+            const r0 = parseFloat(params[5]);
+            const L = parseFloat(params[6]);
 
             if (isNaN(fy) || isNaN(fc) || isNaN(b) || isNaN(h) || isNaN(t) || isNaN(r0) || isNaN(L) || b < h) {
-                document.getElementById('singleResult').innerHTML = '请输入有效的数值，且 <i>b</i> ≥ <i>h</i>。';
+                document.getElementById('singleResult').innerHTML = '请输入有效的数值，且 <i>b</i> ≥ <i>h</i> (Please enter valid values, and ensure <i>b</i> ≥ <i>h</i>)';
                 return;
             }
 
