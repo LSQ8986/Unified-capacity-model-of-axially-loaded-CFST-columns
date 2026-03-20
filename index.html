@@ -134,6 +134,7 @@
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="21ec8c96-01eb-4e40-a2aa-cd85fcd526dc"></script>
 </head>
 
 <body>
@@ -194,21 +195,98 @@
     </div>
     <div class="visit-count" id="visitCount"></div>
     <script>
-        // 访问量统计
-        function updateVisitCount() {
-            let visitCount = localStorage.getItem('visitCount');
-            if (!visitCount) {
-                visitCount = 1;
-            } else {
-                visitCount = parseInt(visitCount) + 1;
-            }
-            localStorage.setItem('visitCount', visitCount);
-            document.getElementById('visitCount').innerHTML = `当前访问量(visitCount): ${visitCount}`;
+        /**
+         * Normalizes a raw string token into a plain ASCII numeric string.
+         * Handles full-width digits, decimal point, minus sign, and whitespace.
+         */
+        function normalizeToken(s) {
+            return String(s)
+                .replace(/^[\s\u3000]+|[\s\u3000]+$/g, '')
+                .replace(/[\uFF10-\uFF19]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0))
+                .replace(/\uFF0E/g, '.')
+                .replace(/\uFF0D/g, '-');
         }
 
-        window.onload = function () {
-            updateVisitCount();
-        };
+        /**
+         * Splits a line by any combination of half-width/full-width separators.
+         * Supports: , ; space (half-width) and ， ； \u3000 (full-width)
+         */
+        function splitParams(line) {
+            return line
+                .replace(/[，；\uFF1B\u3000]/g, ',')
+                .split(/[,;\s]+/)
+                .map(normalizeToken)
+                .filter(t => t !== '');
+        }
+
+        /**
+         * Extracts exactly n numeric parameters from a row by skipping
+         * non-numeric cells (e.g. specimen names in the first column).
+         */
+        function extractParams(row, n) {
+            const nums = row
+                .map(normalizeToken)
+                .filter(c => c !== '' && isFinite(Number(c)));
+            return nums.length >= n ? nums.slice(0, n) : null;
+        }
+
+        /**
+         * Determines whether a row contains at least n numeric values.
+         * Only truly empty rows are rejected.
+         */
+        function isDataRow(row, n) {
+            if (row.length === 0 || row.every(c => normalizeToken(c) === '')) return false;
+            return extractParams(row, n) !== null;
+        }
+
+        // 访问量统计 - 使用 Umami Cloud API 获取实时数据
+        (function () {
+            const WEBSITE_ID = '21ec8c96-01eb-4e40-a2aa-cd85fcd526dc';
+            const API_KEY = 'api_mTmtvME6dy8I2ZCNjJCdNIvCl5EjqDRm';
+            const API_BASE = 'https://api.umami.is/v1';
+
+            async function fetchPageViews() {
+                const startAt = new Date('2024-01-01').getTime();
+                const endAt = Date.now();
+                const url = `${API_BASE}/websites/${WEBSITE_ID}/stats?startAt=${startAt}&endAt=${endAt}`;
+
+                try {
+                    const resp = await fetch(url, {
+                        headers: {
+                            'x-umami-api-key': API_KEY,
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (!resp.ok) throw new Error(`API error: ${resp.status}`);
+                    const data = await resp.json();
+                    const pv = data?.pageviews?.value ?? data?.pageviews ?? null;
+
+                    const countEl = document.getElementById('visitCount');
+                    if (pv !== null && !isNaN(Number(pv))) {
+                        countEl.innerHTML = `
+                            <span style="color: #666;">Total page views: </span>
+                            <span style="color: #007BFF; font-weight: bold; font-size: 22px;">${Number(pv).toLocaleString()}</span>
+                            <span style="width: 8px; height: 8px; background: #27ae60; border-radius: 50%; display: inline-block; margin-left: 6px;"></span>
+                        `;
+                    } else {
+                        countEl.innerHTML = `
+                            <span style="color: #666;">Total page views: </span>
+                            <span style="color: #999;">N/A</span>
+                        `;
+                    }
+                } catch (err) {
+                    console.warn('[VisitorCounter] Failed to fetch stats:', err);
+                    document.getElementById('visitCount').innerHTML = `
+                        <span style="color: #666;">Total page views: </span>
+                        <span style="color: #999;">--</span>
+                    `;
+                }
+            }
+
+            fetchPageViews();
+            setInterval(fetchPageViews, 60000);
+        })();
 
         function calculateSingle() {
             const fy = parseFloat(document.getElementById('fy').value);
@@ -258,49 +336,52 @@
                 return;
             }
 
+            const REQUIRED_PARAMS = 7; // fy, fc, b, h, t, r0, L
+
             const reader = new FileReader();
             reader.onload = function (e) {
                 let jsonData;
-                if (file.name.endsWith('.txt')) {
+                if (file.name.toLowerCase().endsWith('.txt')) {
                     const text = e.target.result;
                     const lines = text.split('\n');
-                    jsonData = lines.map(line => {
-                        line = line.trim();
-                        if (line) {
-                            return line.split(/[,\s]+/).map(item => {
-                                item = item.trim();
-                                return parseFloat(item);
-                            });
-                        }
-                        return null;
-                    }).filter(line => line!== null);
-                } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+                    // Use robust splitParams that supports full-width separators
+                    jsonData = lines
+                        .map(line => splitParams(line))
+                        .filter(tokens => tokens.length > 0);
+                } else if (file.name.toLowerCase().endsWith('.xlsx') || file.name.toLowerCase().endsWith('.xls')) {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
                     const firstSheetName = workbook.SheetNames[0];
                     const worksheet = workbook.Sheets[firstSheetName];
-                    jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
+                    // Normalize all cells for Excel data
+                    jsonData = rawData.map(row => row.map(cell => normalizeToken(String(cell))));
                 }
+
+                // Filter to keep only valid data rows (skip empty rows and header rows)
+                const filteredData = jsonData.filter(row => isDataRow(row, REQUIRED_PARAMS));
 
                 const results = [];
                 results.push(['fy (MPa)', 'fc (MPa)', 'b (mm)', 'h (mm)', 't (mm)', 'r0 (mm)', 'L (mm)', 'Nu (kN)']);
 
-                for (let i = 0; i < jsonData.length; i++) {
-                    const row = jsonData[i];
-                    if (row.length < 7) {
-                        results.push([...row, '数据项不足']);
+                for (let i = 0; i < filteredData.length; i++) {
+                    const row = filteredData[i];
+                    // Extract exactly 7 numeric params, skipping any non-numeric columns
+                    const params = extractParams(row, REQUIRED_PARAMS);
+                    if (!params || params.length < REQUIRED_PARAMS) {
+                        results.push([...row.slice(0, 7), '数据项不足']);
                         continue;
                     }
-                    const fy = parseFloat(row[0]);
-                    const fc = parseFloat(row[1]);
-                    const b = parseFloat(row[2]);
-                    const h = parseFloat(row[3]);
-                    const t = parseFloat(row[4]);
-                    const r0 = parseFloat(row[5]);
-                    const L = parseFloat(row[6]);
+                    const fy = Number(params[0]);
+                    const fc = Number(params[1]);
+                    const b = Number(params[2]);
+                    const h = Number(params[3]);
+                    const t = Number(params[4]);
+                    const r0 = Number(params[5]);
+                    const L = Number(params[6]);
 
                     if (isNaN(fy) || isNaN(fc) || isNaN(b) || isNaN(h) || isNaN(t) || isNaN(r0) || isNaN(L) || b < h) {
-                        results.push([fy, fc, b, h, t, r0, L, '无效数据，需满足 <i>b</i> ≥ <i>h</i>']);
+                        results.push([fy, fc, b, h, t, r0, L, '无效数据，需满足 b ≥ h']);
                     } else {
                         const D = h;
                         const ita = 2 * t / (D - 2 * t) * fy / fc;
