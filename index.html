@@ -1,626 +1,592 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unified capacity model of axially loaded CFST with different sectional shapes</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        /* Modern CSS Reset & Base Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f7fa;
-            min-height: 100vh;
-            padding: 20px;
-            color: #2c3e50;
+            font-family: 'Times New Roman', Times, serif;
+            text-align: center;
+            font-size: 18px;
             line-height: 1.5;
+            color: #333;
         }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 0 20px;
+        .container { 
+            max-width: 900px; 
+            margin: 20px auto; 
+            padding: 20px; 
+            background: #f8f9fa; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
-
-        /* Header Section */
-        .header {
-            text-align: center;
-            color: #2c3e50;
-            margin: 0 auto 20px auto;
-            padding: 15px 0;
-            max-width: 800px;
+        .input-group { 
+            margin: 15px 0; 
+            padding: 15px 20px; 
+            background: white; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-
-        .header h1 {
-            font-size: 2.0rem;
-            font-weight: 400;
-            margin-bottom: 10px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .header .subtitle {
-            font-size: 2.0rem;
-            font-weight: 400;
-            opacity: 0.9;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        /* Logo/Image Section */
-        .logo {
-            text-align: center;
-            margin-bottom: 20px;
-            padding: 0 20px;
-        }
-
-        .logo img {
-            width: 100%;
-            max-width: 800px;
-            height: auto;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            transition: transform 0.3s ease;
-        }
-
-        .logo img:hover {
-            transform: translateY(-3px);
-        }
-
-        /* Main Card */
-        .input-note-section {
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            padding: 30px;
-            margin: 0 auto 20px auto;
-            max-width: 800px;
-        }
-
-        /* Input Groups */
-        .input-group {
-            margin-bottom: 15px;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-
         .input-group:hover {
-            background: #e9ecef;
-            border-color: #007BFF;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .input-row { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); 
+            gap: 15px; 
+        }
+        .param-label { 
+            margin-bottom: 5px; 
+            font-weight: 500;
+        }
+        .param-label i { font-style: italic; }
+        input { 
+            width: 100%; 
+            padding: 8px 12px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        .file-upload { 
+            border: 2px dashed #ccc; 
+            padding: 15px; 
+            text-align: center; 
+            margin: 15px 0;
+            border-radius: 6px;
+            transition: border-color 0.2s;
+        }
+        .file-upload:hover {
+            border-color: #3498db;
+        }
+        #resultTable { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 22px;
+            font-size: 14px;
+        }
+        #resultTable th, #resultTable td { 
+            border: 1px solid #e9ecef; 
+            padding: 10px; 
+            text-align: center; 
+        }
+        #resultTable th { 
+            background-color: #f1f3f5;
+            font-weight: 600;
+        }
+        .highlight { color: #e74c3c; font-weight: bold; }
+        button { 
+            padding: 10px 18px; 
+            margin: 5px; 
+            background: #3498db; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer;
+            font-size: 15px;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        button:hover { 
+            background: #2980b9;
             transform: translateY(-1px);
         }
-
-        .input-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: #495057;
-            font-size: 0.9rem;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 10px 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: #007BFF;
-            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
-        }
-
-        /* Buttons */
-        button {
-            padding: 12px 28px;
-            background: #3498db;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 500;
-            margin: 15px auto;
-            display: block;
-            transition: all 0.2s ease;
-        }
-
-        button:hover {
-            background: #2980b9;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
-        }
-
         button:active {
             transform: translateY(0);
         }
-
-        /* Download Button */
-        .download-button {
-            background: #27ae60;
+        #exportBtn { display: none; background: #27ae60; }
+        .file-input-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
         }
-
-        .download-button:hover {
-            background: #229954;
-        }
-
-        /* Results */
-        .result {
-            margin: 15px 0;
-            text-align: center;
-            background: #e74c3c;
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 1.2rem;
-        }
-
-        /* File Input Group */
-        .file-input-group {
-            margin: 15px 0;
-            padding: 15px;
-            background: #f8f9fa;
-            border: 2px dashed #bdc3c7;
-            border-radius: 8px;
-            text-align: center;
-            transition: all 0.2s ease;
-        }
-
-        .file-input-group:hover {
-            background: #e9ecef;
-            border-color: #95a5a6;
-        }
-
-        .file-input-group label {
-            color: #856404;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .file-input-group input[type="file"] {
-            margin-top: 10px;
-            padding: 10px;
-            background: white;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-        }
-
-        /* Separator */
-        .separator {
-            height: 1px;
-            background: linear-gradient(to right, transparent, #ccc, transparent);
-            margin: 30px 0;
-            border: none;
-        }
-
-        /* Notes */
-        .note {
-            margin-top: 30px;
-            padding: 20px;
-            background: #e7f3ff;
-            border-left: 4px solid #007BFF;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            line-height: 1.7;
-        }
-
-        .note br {
-            display: block;
-            margin: 8px 0;
-        }
-
-        /* Visitor Counter */
-        .visit-count {
-            text-align: center;
-            margin-top: 30px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            font-size: 1rem;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .input-note-section {
-                padding: 25px;
-            }
-            
-            button {
-                padding: 12px 24px;
-                width: 100%;
-            }
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .input-note-section {
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        /* Single Calculation Section */
-        .single-calc-section {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 20px;
-            border: 1px solid #e9ecef;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-
-        /* Parameter table items */
-        .single-calc-section div > div {
+        input[type="file"] {
+            max-width: 300px;
+            font-size: 15px;
             padding: 8px;
-            background: white;
-            border-radius: 6px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            transition: all 0.2s ease;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
-
-        .single-calc-section div > div:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        .result-message {
+            margin: 15px 0;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+        .diagram-container {
+            margin: 15px 0;
+            padding: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .diagram-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        h3 {
+            font-size: 24px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #34495e;
+        }
+        .parameter-label {
+            font-size: 22px;
+            margin-bottom: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        /* Fix input overflow issues */
+        .single-input-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* Visitor counter styles */
+        .visitor-counter {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 16px 24px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 16px;
+            color: #555;
+        }
+        .visitor-counter .vc-icon {
+            font-size: 20px;
+        }
+        .visitor-counter .vc-count {
+            font-size: 22px;
+            font-weight: bold;
+            color: #3498db;
+            min-width: 40px;
+            display: inline-block;
+            text-align: center;
+        }
+        .visitor-counter .vc-label {
+            color: #555;
+        }
+        .visitor-counter .vc-dot {
+            width: 8px;
+            height: 8px;
+            background: #27ae60;
+            border-radius: 50%;
+            display: inline-block;
+            animation: vc-pulse 2s infinite;
+            margin-left: 6px;
+        }
+        @keyframes vc-pulse {
+            0%   { opacity: 1; transform: scale(1); }
+            50%  { opacity: 0.4; transform: scale(0.85); }
+            100% { opacity: 1; transform: scale(1); }
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script defer src="https://cloud.umami.is/script.js" data-website-id="21ec8c96-01eb-4e40-a2aa-cd85fcd526dc"></script>
 </head>
-
 <body>
+    <h1>Unified capacity model of axially loaded CFST with different sectional shapes</h1>
     <div class="container">
-        <div class="header">
-            <h1>Unified Capacity Model of Axially Loaded CFST Columns</h1>
-            <div class="subtitle">with Different Sectional Shapes</div>
+        <div class="diagram-container">
+            <img src="Equivalent columns_Final.jpg" alt="CFST Column Diagram showing different sectional shapes">
         </div>
         
-        <div class="logo">
-            <!-- 使用占位符图片，实际使用时替换为真实的 Logo 图片 -->
-            <img src="Equivalent columns_Final.jpg" alt="Logo">
+        <!-- Parameter Reference Section -->
+        <div class="input-group" style="background: #e3f2fd; border-left: 4px solid #2196f3; margin: 0 auto; max-width: 900px;">
+            <h3>Parameter Reference</h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; font-size: 20px; text-align: left;">
+                <span><strong><i>f</i><sub>y</sub></strong>: Steel strength (MPa)</span>
+                <span><strong><i>f</i><sub>c</sub></strong>: Concrete strength (MPa)</span>
+                <span><strong><i>b</i></strong>: Sectional width (mm)</span>
+                <span><strong><i>h</i></strong>: Sectional height (mm)</span>
+                <span><strong><i>t</i></strong>: Steel thickness (mm)</span>
+                <span><strong><i>r</i><sub>0</sub></strong>: Outer corner radii (mm)</span>
+                <span><strong><i>L</i></strong>: Column length (mm)</span>
+            </div>
         </div>
-        
-        <div class="input-note-section">
         
         <!-- Single Calculation Section -->
-        <div class="single-calc-section">
-            <!-- Parameter Reference Table -->
-            <div style="background: #f8f9fa; border-radius: 6px; padding: 15px; margin-bottom: 15px; text-align: center;">
-                <h3 style="margin: 0 0 12px 0; color: #2c3e50; font-size: 1.4rem; font-family: 'Times New Roman', serif;">Parameter Reference</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 1.05rem; font-family: 'Times New Roman', serif;">
-                    <div><strong><i>f</i><sub>y</sub></strong>: Steel strength (MPa)</div>
-                    <div><strong><i>f</i><sub>c</sub></strong>: Concrete strength (MPa)</div>
-                    <div><strong><i>b</i></strong>: Sectional width (mm)</div>
-                    <div><strong><i>h</i></strong>: Sectional height (mm)</div>
-                    <div><strong><i>t</i></strong>: Steel thickness (mm)</div>
-                    <div><strong><i>r</i><sub>0</sub></strong>: Outer corner radii (mm)</div>
-                    <div><strong><i>L</i></strong>: Column length (mm)</div>
+        <div class="input-group">
+            <h3>Single Calculation</h3>
+            <p class="parameter-label">Parameters input [<i>f</i><sub>y</sub> (MPa), <i>f</i><sub>c</sub>(MPa), <i>b</i>(mm), <i>h</i>(mm), <i>t</i>(mm), <i>r</i><sub>0</sub>(mm), <i>L</i>(mm)]</p>
+            <div class="single-input-wrapper">
+                <input type="text" id="singleInput" placeholder="Enter parameters separated by comma or space">
+            </div>
+            <button onclick="calculateSingle()">Calculate</button>
+            <div id="singleResult" class="highlight" style="margin-top:15px;"></div>
+        </div>
+
+        <!-- Batch Calculation Section -->
+        <div class="input-group">
+            <h3>Batch Calculation</h3>
+            <p class="parameter-label">Parameters input [<i>f</i><sub>y</sub> (MPa), <i>f</i><sub>c</sub>(MPa), <i>b</i>(mm), <i>h</i>(mm), <i>t</i>(mm), <i>r</i><sub>0</sub>(mm), <i>L</i>(mm)]</p>
+            <div class="file-upload">
+                <div class="file-input-container">
+                    <input type="file" id="batchFile" accept=".csv,.xlsx,.txt">
+                    <span>Supported formats: CSV, Excel, TXT</span>
                 </div>
             </div>
-            
-            <!-- Unified style input area matching batch calculation -->
-            <div class="file-input-group">
-                <label style="font-family: 'Times New Roman', serif; margin-bottom: 10px; font-size: 1.1rem;">Parameters input [<i>f</i><sub>y</sub> (MPa), <i>f</i><sub>c</sub>(MPa), <i>b</i>(mm), <i>h</i>(mm), <i>t</i>(mm), <i>r</i><sub>0</sub>(mm), <i>L</i>(mm)]</label>
-                <input type="text" id="singleInput" placeholder="Enter parameters separated by comma or space" required style="font-family: 'Times New Roman', serif; font-size: 1.1rem; padding: 15px; width: 100%;">
-            </div>
-            <button onclick="calculateSingle()">单根计算（Single calculation）</button>
-            <div class="result" id="singleResult"></div>
-        </div>
-        
-        <div class="separator"></div>
-        <div class="file-input-group">
-            <label style="font-family: 'Times New Roman', serif; font-size: 1.1rem;">Upload txt or Excel file for Batch Processing </label>
-            <label style="font-family: 'Times New Roman', serif; font-size: 1.1rem;">(Format: <i>f</i><sub>y</sub>, <i>f</i><sub>c</sub>, <i>b</i>, <i>h</i>, <i>t</i>, <i>r</i><sub>0</sub>, <i>L</i>)</label>
-            <input type="file" id="fileInput" accept=".txt, .xlsx, .xls" value="Choose File" style="font-family: 'Times New Roman', serif;">
-        </div>
-        <button onclick="calculateBatch()">批量计算（Batch calculation）</button>
-        <div class="result" id="batchResult"></div>
-        <!-- 修改按钮样式 -->
-        <button id="downloadButton" class="download-button" style="display: none;" onclick="downloadExcel()">下载计算结果（Download Results）</button>
-        <div class="separator"></div>
-        <div class="note">
-            The model is developed based on the following references:
-            <br>[1].Siqi Lin, Yan-Gang Zhao, Zhao-Hui Lu, Xi-Feng Yan. Unified Theoretical Model for Axially Loaded Concrete-Filled Steel Tube Stub Columns with Different Cross-Sectional Shapes. Journal of Structural Engineering-ASCE, 2021, 147(10): 04021159.
-            <br>[2].Siqi Lin, Yan-Gang Zhao, Zhao-hui Lu. Fibre beam element models for nonlinear analysis of concentrically loaded circular CFT columns considering the size effect. Engineering Structures, 2020, 210: 110400.
+            <button onclick="handleBatchCalculate()">Calculate</button>
+            <button id="exportBtn" onclick="exportExcel()">Download Results</button>
+            <div id="batchResultMessage" class="result-message" style="display: none;"></div>
+            <table id="resultTable" style="display:none;">
+                <thead>
+                    <tr>
+                        <th><i>f</i><sub>y</sub> /MPa</th><th><i>f</i><sub>c</sub> /MPa</th><th><i>b</i> /mm</th><th><i>h</i> /mm>
+                        <th><i>t</i> /mm</th><th><i>r</i><sub>0</sub> /mm</th><th><i>L</i> /mm</th><th><i>N</i><sub>u</sub> /kN</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
     </div>
-    <div class="visit-count" id="visitCount"></div>
-    <script>
-        /**
-         * Normalizes a raw string token into a plain ASCII numeric string.
-         * Handles full-width digits, decimal point, minus sign, and whitespace.
-         */
-        function normalizeToken(s) {
-            return String(s)
-                .replace(/^[\s\u3000]+|[\s\u3000]+$/g, '')
-                .replace(/[\uFF10-\uFF19]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0))
-                .replace(/\uFF0E/g, '.')
-                .replace(/\uFF0D/g, '-');
-        }
 
-        /**
-         * Splits a line by any combination of half-width/full-width separators.
-         * Supports: , ; space (half-width) and ， ； \u3000 (full-width)
-         */
-        function splitParams(line) {
-            return line
-                .replace(/[，；\uFF1B\u3000]/g, ',')
-                .split(/[,;\s]+/)
-                .map(normalizeToken)
-                .filter(t => t !== '');
-        }
+    <!-- Visitor Counter Module -->
+    <div class="visitor-counter" id="visitorCounter" title="Total page views since launch">
+        <span class="vc-icon">&#128065;</span>
+        <span class="vc-label">Total page views:</span>
+        <span class="vc-count" id="vcCount">--</span>
+        <span class="vc-dot" id="vcDot"></span>
+    </div>
 
-        /**
-         * Extracts exactly n numeric parameters from a row by skipping
-         * non-numeric cells (e.g. specimen names in the first column).
-         */
-        function extractParams(row, n) {
-            const nums = row
-                .map(normalizeToken)
-                .filter(c => c !== '' && isFinite(Number(c)));
-            return nums.length >= n ? nums.slice(0, n) : null;
-        }
+<script>
+/**
+ * Fetches page view count from Umami Cloud API and updates the counter.
+ * Uses the /api/websites/{websiteId}/stats endpoint.
+ */
+(function () {
+    const WEBSITE_ID = '21ec8c96-01eb-4e40-a2aa-cd85fcd526dc';
+    const API_KEY    = 'api_mTmtvME6dy8I2ZCNjJCdNIvCl5EjqDRm';
+    const API_BASE   = 'https://api.umami.is/v1';
 
-        /**
-         * Determines whether a row contains at least n numeric values.
-         * Only truly empty rows are rejected.
-         */
-        function isDataRow(row, n) {
-            if (row.length === 0 || row.every(c => normalizeToken(c) === '')) return false;
-            return extractParams(row, n) !== null;
-        }
+    async function fetchPageViews() {
+        // startAt: Unix timestamp (ms) for a distant past date to capture all data
+        const startAt = new Date('2024-01-01').getTime();
+        const endAt   = Date.now();
 
-        // 访问量统计 - 使用 Umami Cloud API 获取实时数据
-        (function () {
-            const WEBSITE_ID = '21ec8c96-01eb-4e40-a2aa-cd85fcd526dc';
-            const API_KEY = 'api_mTmtvME6dy8I2ZCNjJCdNIvCl5EjqDRm';
-            const API_BASE = 'https://api.umami.is/v1';
+        const url = `${API_BASE}/websites/${WEBSITE_ID}/stats?startAt=${startAt}&endAt=${endAt}`;
 
-            async function fetchPageViews() {
-                const startAt = new Date('2024-01-01').getTime();
-                const endAt = Date.now();
-                const url = `${API_BASE}/websites/${WEBSITE_ID}/stats?startAt=${startAt}&endAt=${endAt}`;
-
-                try {
-                    const resp = await fetch(url, {
-                        headers: {
-                            'x-umami-api-key': API_KEY,
-                            'Accept': 'application/json'
-                        }
-                    });
-
-                    if (!resp.ok) throw new Error(`API error: ${resp.status}`);
-                    const data = await resp.json();
-                    const pv = data?.pageviews?.value ?? data?.pageviews ?? null;
-
-                    const countEl = document.getElementById('visitCount');
-                    if (pv !== null && !isNaN(Number(pv))) {
-                        countEl.innerHTML = `
-                            <span style="color: #666;">Total page views: </span>
-                            <span style="color: #007BFF; font-weight: bold; font-size: 22px;">${Number(pv).toLocaleString()}</span>
-                            <span style="width: 8px; height: 8px; background: #27ae60; border-radius: 50%; display: inline-block; margin-left: 6px;"></span>
-                        `;
-                    } else {
-                        countEl.innerHTML = `
-                            <span style="color: #666;">Total page views: </span>
-                            <span style="color: #999;">N/A</span>
-                        `;
-                    }
-                } catch (err) {
-                    console.warn('[VisitorCounter] Failed to fetch stats:', err);
-                    document.getElementById('visitCount').innerHTML = `
-                        <span style="color: #666;">Total page views: </span>
-                        <span style="color: #999;">--</span>
-                    `;
+        try {
+            const resp = await fetch(url, {
+                headers: {
+                    'x-umami-api-key': API_KEY,
+                    'Accept': 'application/json'
                 }
-            }
+            });
 
-            fetchPageViews();
-            setInterval(fetchPageViews, 60000);
-        })();
+            if (!resp.ok) throw new Error(`API error: ${resp.status}`);
 
-        function calculateSingle() {
-            const inputText = document.getElementById('singleInput').value.trim();
-            if (!inputText) {
-                document.getElementById('singleResult').innerHTML = '请输入参数 (Please enter parameters)';
-                return;
-            }
+            const data = await resp.json();
+            // Umami stats API returns { pageviews: { value, prev }, ... }
+            const pv = data?.pageviews?.value ?? data?.pageviews ?? null;
 
-            // 使用 splitParams 解析输入，支持多种分隔符
-            const params = splitParams(inputText);
-            
-            if (params.length < 7) {
-                document.getElementById('singleResult').innerHTML = `参数不足，需要7个数值 (Insufficient parameters, 7 values required). 当前输入: ${params.length}个数值`;
-                return;
-            }
+            const countEl = document.getElementById('vcCount');
+            const dotEl   = document.getElementById('vcDot');
 
-            const fy = parseFloat(params[0]);
-            const fc = parseFloat(params[1]);
-            const b = parseFloat(params[2]);
-            const h = parseFloat(params[3]);
-            const t = parseFloat(params[4]);
-            const r0 = parseFloat(params[5]);
-            const L = parseFloat(params[6]);
-
-            if (isNaN(fy) || isNaN(fc) || isNaN(b) || isNaN(h) || isNaN(t) || isNaN(r0) || isNaN(L) || b < h) {
-                document.getElementById('singleResult').innerHTML = '请输入有效的数值，且 <i>b</i> ≥ <i>h</i> (Please enter valid values, and ensure <i>b</i> ≥ <i>h</i>)';
-                return;
-            }
-
-            const D = h;
-            const ita = 2 * t / (D - 2 * t) * fy / fc;
-            const Rd_cc = Math.pow(1.67, Math.pow(1 + ita, -8)) * Math.pow((D - 2 * t), -(0.112 * Math.pow(0.0005, ita)));
-            const fcm = fc * Rd_cc * (1 + 52 * Math.pow(fy, 0.1) * Math.pow(fc, -0.85) * Math.pow((D / t), -0.6));
-            const fsm = 1.53 * Math.pow(fy, -0.05) * (1 - 0.002 * D / t) * fy;
-            const Acc = Math.PI * Math.pow((D / 2 - t), 2);
-            const Asc = Math.PI * Math.pow((D / 2), 2) - Acc;
-            const Nuc = fcm * Acc + fsm * Asc;
-            const fr = 1 + 0.003 * fc * (1 - Math.exp(r0 / h - 0.5));
-            const fa = 1 + (0.002 * fc + 0.62) * (b / h - 1);
-
-            const Es = 200000;
-            const Is = Math.PI * (Math.pow(D, 4) - Math.pow(D - 2 * t, 4)) / 64;
-            const Ec = 22000 * Math.pow((fc + 8) / 10, 0.3);
-            const Ic = Math.PI * Math.pow(D - 2 * t, 4) / 64;
-            const Ncr = Math.pow(Math.PI, 2) * (Es * Is + 0.6 * Ec * Ic) / Math.pow(L, 2);
-            const N0 = fy * Asc + fc * Acc;
-            const naga = Math.pow(N0 / Ncr, 0.5);
-            const Rd_s = Math.min(1.2 * Math.exp(-0.7 * naga), 1);
-
-            const Nu = Rd_s * fr * fa * Nuc / 1000;
-
-            document.getElementById('singleResult').innerHTML = `Axial load-bearing capacity <i>N</i><sub>u</sub> = ${Nu.toFixed(2)} kN`;
-        }
-
-        function calculateBatch() {
-            const fileInput = document.getElementById('fileInput');
-            const file = fileInput.files[0];
-
-            if (!file) {
-                document.getElementById('batchResult').innerHTML = '请选择一个文件(Please choose a file)';
-                return;
-            }
-
-            const REQUIRED_PARAMS = 7; // fy, fc, b, h, t, r0, L
-
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                let jsonData;
-                if (file.name.toLowerCase().endsWith('.txt')) {
-                    const text = e.target.result;
-                    const lines = text.split('\n');
-                    // Use robust splitParams that supports full-width separators
-                    jsonData = lines
-                        .map(line => splitParams(line))
-                        .filter(tokens => tokens.length > 0);
-                } else if (file.name.toLowerCase().endsWith('.xlsx') || file.name.toLowerCase().endsWith('.xls')) {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-                    const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
-                    // Normalize all cells for Excel data
-                    jsonData = rawData.map(row => row.map(cell => normalizeToken(String(cell))));
-                }
-
-                // Filter to keep only valid data rows (skip empty rows and header rows)
-                const filteredData = jsonData.filter(row => isDataRow(row, REQUIRED_PARAMS));
-
-                const results = [];
-                results.push(['fy (MPa)', 'fc (MPa)', 'b (mm)', 'h (mm)', 't (mm)', 'r0 (mm)', 'L (mm)', 'Nu (kN)']);
-
-                for (let i = 0; i < filteredData.length; i++) {
-                    const row = filteredData[i];
-                    // Extract exactly 7 numeric params, skipping any non-numeric columns
-                    const params = extractParams(row, REQUIRED_PARAMS);
-                    if (!params || params.length < REQUIRED_PARAMS) {
-                        results.push([...row.slice(0, 7), '数据项不足']);
-                        continue;
-                    }
-                    const fy = Number(params[0]);
-                    const fc = Number(params[1]);
-                    const b = Number(params[2]);
-                    const h = Number(params[3]);
-                    const t = Number(params[4]);
-                    const r0 = Number(params[5]);
-                    const L = Number(params[6]);
-
-                    if (isNaN(fy) || isNaN(fc) || isNaN(b) || isNaN(h) || isNaN(t) || isNaN(r0) || isNaN(L) || b < h) {
-                        results.push([fy, fc, b, h, t, r0, L, '无效数据，需满足 b ≥ h']);
-                    } else {
-                        const D = h;
-                        const ita = 2 * t / (D - 2 * t) * fy / fc;
-                        const Rd_cc = Math.pow(1.67, Math.pow(1 + ita, -8)) * Math.pow((D - 2 * t), -(0.112 * Math.pow(0.0005, ita)));
-                        const fcm = fc * Rd_cc * (1 + 52 * Math.pow(fy, 0.1) * Math.pow(fc, -0.85) * Math.pow((D / t), -0.6));
-                        const fsm = 1.53 * Math.pow(fy, -0.05) * (1 - 0.002 * D / t) * fy;
-                        const Acc = Math.PI * Math.pow((D / 2 - t), 2);
-                        const Asc = Math.PI * Math.pow((D / 2), 2) - Acc;
-                        const Nuc = fcm * Acc + fsm * Asc;
-                        const fr = 1 + 0.003 * fc * (1 - Math.exp(r0 / h - 0.5));
-                        const fa = 1 + (0.002 * fc + 0.62) * (b / h - 1);
-
-                        const Es = 200000;
-                        const Is = Math.PI * (Math.pow(D, 4) - Math.pow(D - 2 * t, 4)) / 64;
-                        const Ec = 22000 * Math.pow((fc + 8) / 10, 0.3);
-                        const Ic = Math.PI * Math.pow(D - 2 * t, 4) / 64;
-                        const Ncr = Math.pow(Math.PI, 2) * (Es * Is + 0.6 * Ec * Ic) / Math.pow(L, 2);
-                        const N0 = fy * Asc + fc * Acc;
-                        const naga = Math.pow(N0 / Ncr, 0.5);
-                        const Rd_s = Math.min(1.2 * Math.exp(-0.7 * naga), 1);
-
-                        const Nu = Rd_s * fr * fa * Nuc / 1000;
-                        results.push([fy, fc, b, h, t, r0, L, Nu.toFixed(2)]);
-                    }
-                }
-
-                const newWorkbook = XLSX.utils.book_new();
-                const newWorksheet = XLSX.utils.aoa_to_sheet(results);
-                XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, '计算结果(Results)');
-                window.calculationResultWorkbook = newWorkbook;
-
-                document.getElementById('batchResult').innerHTML = 'Calculation completed! Click the following button to download results';
-                document.getElementById('downloadButton').style.display = 'block';
-            };
-
-            if (file.name.endsWith('.txt')) {
-                reader.readAsText(file);
+            if (pv !== null && !isNaN(Number(pv))) {
+                countEl.textContent = Number(pv).toLocaleString();
+                dotEl.style.background = '#27ae60'; // green = live data
             } else {
-                reader.readAsArrayBuffer(file);
+                countEl.textContent = 'N/A';
+                dotEl.style.background = '#e74c3c';
             }
+        } catch (err) {
+            const countEl = document.getElementById('vcCount');
+            const dotEl   = document.getElementById('vcDot');
+            countEl.textContent = 'N/A';
+            dotEl.style.background = '#e74c3c';
+            console.warn('[VisitorCounter] Failed to fetch stats:', err);
         }
+    }
 
-        function downloadExcel() {
-            const workbook = window.calculationResultWorkbook;
-            if (!workbook) {
-                console.error('工作簿未正确生成，请先进行批量计算。');
-                return;
-            }
-            try {
-                const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'binary' });
-                const buf = new ArrayBuffer(wbout.length);
-                const view = new Uint8Array(buf);
-                for (let i = 0; i < wbout.length; i++) view[i] = wbout.charCodeAt(i) & 0xFF;
-                const blob = new Blob([buf], { type: 'application/octet-stream' });
-                const url = URL.createObjectURL(blob);
+    // Fetch immediately on page load, then refresh every 60 seconds
+    fetchPageViews();
+    setInterval(fetchPageViews, 60000);
+})();
+</script>
 
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'Results.xlsx';
-                a.style.display = 'none';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                console.log('文件下载成功(File downloaded successfully)');
-            } catch (error) {
-                console.error('下载文件时出现错误:', error);
+<script>
+/**
+ * Core calculation function: Computes CFST column capacity based on input parameters
+ * @param {Array} params - Array containing 7 parameters:
+ *   [fy, fc, b, h, t, r0, L]
+ * @returns {Object} Result object with either calculated value or error message
+ */
+function calculate(params) {
+    // Convert all parameters to numbers
+    const [fy, fc, b, h, t, r0, L] = params.map(Number);
+    
+    // Parameter validation
+    if (isNaN(fy) || isNaN(fc) || isNaN(b) || isNaN(h) || isNaN(t) || isNaN(r0) || isNaN(L)) {
+        return {error: "Invalid parameter format - please use numbers only"};
+    }
+
+    // Geometric parameter calculations
+    const Ac = b * h - (b - 2*t) * (h - 2*t) - (4 - Math.PI) * (r0 - t/2) * (r0 - t/2); // Concrete area
+    const As = b * h - Ac; // Steel area
+    const xi = fy * As / (fc * Ac); // Steel ratio parameter
+    
+    // Capacity calculation based on unified model
+    const Nu = 1.2 * fc * (As + Ac) / 1000; // Simplified unified model (convert to kN)
+    
+    return {
+        value: Nu,
+        error: null
+    };
+}
+
+/**
+ * Normalizes a raw string token into a plain ASCII numeric string.
+ * Handles:
+ *   - Full-width digits/decimal point/minus: ０-９ → 0-9,． → ., － → -
+ *   - Leading/trailing whitespace (including full-width space \u3000)
+ * @param {string} s
+ * @returns {string}
+ */
+function normalizeToken(s) {
+    return String(s)
+        // Strip leading/trailing ASCII and full-width spaces
+        .replace(/^[\s\u3000]+|[\s\u3000]+$/g, '')
+        // Full-width digits → ASCII digits
+        .replace(/[\uFF10-\uFF19]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0))
+        // Full-width decimal point ．→ .
+        .replace(/\uFF0E/g, '.')
+        // Full-width minus sign －→ -
+        .replace(/\uFF0D/g, '-');
+}
+
+/**
+ * Splits a single-line string by any combination of:
+ *   half-width , ; whitespace
+ *   full-width ， ； \u3000
+ * Returns only non-empty tokens after normalization.
+ * @param {string} line
+ * @returns {string[]}
+ */
+function splitParams(line) {
+    // Replace full-width separators with ASCII comma first, then split
+    return line
+        .replace(/[，；\uFF1B\u3000]/g, ',')   // full-width , ; space → ,
+        .split(/[,;\s]+/)                        // split on half-width , ; whitespace
+        .map(normalizeToken)
+        .filter(t => t !== '');
+}
+
+/**
+ * Extracts exactly 7 numeric parameters from a row by skipping any
+ * non-numeric cells (e.g. specimen labels in the first column).
+ * Returns an array of 7 normalized numeric strings, or null if fewer
+ * than 7 numeric cells are found anywhere in the row.
+ * @param {string[]} row
+ * @returns {string[]|null}
+ */
+function extractParams(row) {
+    const nums = row
+        .map(normalizeToken)
+        .filter(c => c !== '' && isFinite(Number(c)));
+    return nums.length >= 7 ? nums.slice(0, 7) : null;
+}
+
+/**
+ * Determines whether a row contains at least 7 numeric values
+ * (non-numeric leading/interspersed cells such as specimen names are ignored).
+ * Only truly empty rows are rejected.
+ * @param {string[]} row
+ * @returns {boolean}
+ */
+function isDataRow(row) {
+    // Skip entirely empty rows
+    if (row.length === 0 || row.every(c => normalizeToken(c) === '')) return false;
+    // Accept the row if we can extract 7 numeric params from it
+    return extractParams(row) !== null;
+}
+
+/**
+ * Handles single calculation from input field.
+ * Accepts parameters separated by commas, semicolons, spaces
+ * (both half-width and full-width variants).
+ */
+function calculateSingle() {
+    const raw = document.getElementById('singleInput').value;
+    
+    // Check for empty input
+    if (!raw.trim() && !raw.replace(/\u3000/g, '').trim()) {
+        document.getElementById('singleResult').innerHTML = 
+            '<p style="color:red">Error: Please enter parameters</p>';
+        return;
+    }
+    
+    // Split using the robust parser
+    const params = splitParams(raw);
+    
+    // Validate parameter count
+    if (params.length !== 7) {
+        document.getElementById('singleResult').innerHTML = 
+            `<p style="color:red">Error: Please enter exactly 7 parameters (received ${params.length})</p>`;
+        return;
+    }
+
+    // Perform calculation and display result
+    const result = calculate(params);
+    document.getElementById('singleResult').innerHTML = result.error ? 
+        `<p style="color:red">${result.error}</p>` :
+        `<p><i>N</i><sub>u</sub> = <span>${result.value.toFixed(2)}</span> kN</p>`;
+}
+
+// Store batch calculation results
+let batchResults = [];
+
+/**
+ * Handles batch calculation from uploaded file.
+ */
+async function handleBatchCalculate() {
+    const file = document.getElementById('batchFile').files[0];
+    
+    // Check if file was selected
+    if (!file) return alert("Please upload a file first");
+    
+    // Read and process file data
+    const rawData = await readFile(file);
+    
+    // Process each row and calculate results
+    batchResults = rawData.map(row => {
+        // Skip non-numeric leading cells (e.g. specimen name), extract 7 numeric params
+        const params = extractParams(row);
+        if (!params) return null; // shouldn't happen after isDataRow filter, but guard anyway
+        const result = calculate(params);
+        return [...params.map(Number), result.error ? "Error" : result.value];
+    }).filter(Boolean);
+
+    // Get UI elements for results display
+    const resultMessage = document.getElementById('batchResultMessage');
+    const resultTable = document.getElementById('resultTable');
+    
+    // Display appropriate results based on data volume
+    if (batchResults.length <= 200) {
+        // Show table for smaller datasets
+        const tbody = document.querySelector('#resultTable tbody');
+        tbody.innerHTML = batchResults.map(row => `
+            <tr>
+                <td>${isFinite(row[0]) ? Number(row[0]).toFixed(2) : ''}</td>
+                <td>${isFinite(row[1]) ? Number(row[1]).toFixed(2) : ''}</td>
+                <td>${isFinite(row[2]) ? Number(row[2]).toFixed(2) : ''}</td>
+                <td>${isFinite(row[3]) ? Number(row[3]).toFixed(2) : ''}</td>
+                <td>${isFinite(row[4]) ? Number(row[4]).toFixed(2) : ''}</td>
+                <td>${isFinite(row[5]) ? Number(row[5]).toFixed(2) : ''}</td>
+                <td>${isFinite(row[6]) ? Number(row[6]).toFixed(2) : ''}</td>
+                <td>${row[7] === "Error" ? "Error" : (isFinite(row[7]) ? Number(row[7]).toFixed(2) : '')}</td>
+            </tr>
+        `).join('');
+        
+        resultTable.style.display = 'table';
+        resultMessage.style.display = 'none';
+    } else {
+        // Show message only for large datasets
+        resultTable.style.display = 'none';
+        resultMessage.style.display = 'block';
+        resultMessage.innerHTML = `Calculation complete. Processed ${batchResults.length} specimens. 
+            Results table hidden due to size (over 200 entries). Please download the results file.`;
+    }
+    
+    // Show export button after calculation
+    document.getElementById('exportBtn').style.display = 'inline-block';
+}
+
+/**
+ * Reads and processes uploaded files.
+ * - Excel (.xlsx): reads via SheetJS, normalizes all cells.
+ * - Text (.csv / .txt): splits each line by robust separator regex,
+ *   then filters out blank lines and header rows automatically.
+ * @param {File} file - Uploaded file object
+ * @returns {Promise<Array>} Array of string-token rows, data rows only
+ */
+async function readFile(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+            let data = [];
+            
+            // Read Excel files
+            if (file.name.toLowerCase().endsWith('.xlsx')) {
+                const workbook = XLSX.read(e.target.result, { type: 'array' });
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                const raw = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+                // Convert every cell to a normalized string
+                data = raw.map(row => row.map(cell => normalizeToken(String(cell))));
+            } 
+            // Read text-based files (CSV, TXT)
+            else {
+                // Normalize line endings, then split into lines
+                const lines = e.target.result
+                    .replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+                    .split('\n');
+                data = lines.map(line => {
+                    // For text files, each line may use any supported delimiter
+                    return line
+                        .replace(/[，；\uFF1B\u3000]/g, ',')
+                        .split(/[,;\t]+/)
+                        .map(cell => normalizeToken(cell));
+                });
             }
+
+            // Keep only valid data rows (all 7 leading cells are finite numbers)
+            const filteredData = data.filter(isDataRow);
+
+            resolve(filteredData);
+        };
+
+        // Read file in appropriate format
+        if (file.name.toLowerCase().endsWith('.xlsx')) {
+            reader.readAsArrayBuffer(file);
+        } else {
+            reader.readAsText(file);
         }
-    </script>
+    });
+}
+
+/**
+ * Exports batch results to Excel file
+ */
+function exportExcel() {
+    // Convert results to JSON format for Excel export
+    const ws = XLSX.utils.json_to_sheet(batchResults.map(row => ({
+        "fy /MPa": row[0], 
+        "fc /MPa": row[1], 
+        "b /mm": row[2],
+        "h /mm": row[3], 
+        "t /mm": row[4], 
+        "r0 /mm": row[5],
+        "L /mm": row[6], 
+        "Nu /kN": row[7]
+    })));
+    
+    // Create workbook and export
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "CFST_Results");
+    XLSX.writeFile(wb, "CFST_Batch_Results.xlsx");
+}
+</script>
 </body>
-
-</html>    
+</html>
