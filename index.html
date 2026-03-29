@@ -75,7 +75,7 @@
         #resultTable th, #resultTable td { 
             border: 1px solid #e9ecef; 
             padding: 10px; 
-            text-align: center; 
+            text-align: center;
         }
         #resultTable th { 
             background-color: #f1f3f5;
@@ -290,28 +290,56 @@
     </div>
 
 <script>
+/**
+ * Fetches page view count from Umami Cloud API and updates the counter.
+ * Uses the /api/websites/{websiteId}/stats endpoint.
+ */
 (function () {
     const WEBSITE_ID = '21ec8c96-01eb-4e40-a2aa-cd85fcd526dc';
     const API_KEY    = 'api_mTmtvME6dy8I2ZCNjJCdNIvCl5EjqDRm';
     const API_BASE   = 'https://api.umami.is/v1';
 
     async function fetchPageViews() {
+        // startAt: Unix timestamp (ms) for a distant past date to capture all data
         const startAt = new Date('2024-01-01').getTime();
         const endAt   = Date.now();
+
         const url = `${API_BASE}/websites/${WEBSITE_ID}/stats?startAt=${startAt}&endAt=${endAt}`;
 
         try {
-            const resp = await fetch(url, { headers: { 'x-umami-api-key': API_KEY } });
-            if (!resp.ok) throw new Error(resp.status);
+            const resp = await fetch(url, {
+                headers: {
+                    'x-umami-api-key': API_KEY,
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!resp.ok) throw new Error(`API error: ${resp.status}`);
+
             const data = await resp.json();
-            const pv = data?.pageviews?.value ?? '--';
-            document.getElementById('vcCount').textContent = Number(pv).toLocaleString();
-            document.getElementById('vcDot').style.background = '#27ae60';
+            // Umami stats API returns { pageviews: { value, prev }, ... }
+            const pv = data?.pageviews?.value ?? data?.pageviews ?? null;
+
+            const countEl = document.getElementById('vcCount');
+            const dotEl   = document.getElementById('vcDot');
+
+            if (pv !== null && !isNaN(Number(pv))) {
+                countEl.textContent = Number(pv).toLocaleString();
+                dotEl.style.background = '#27ae60'; // green = live data
+            } else {
+                countEl.textContent = 'N/A';
+                dotEl.style.background = '#e74c3c'; // red = error
+            }
         } catch (err) {
-            document.getElementById('vcCount').textContent = 'N/A';
-            document.getElementById('vcDot').style.background = '#e74c3c';
+            const countEl = document.getElementById('vcCount');
+            const dotEl   = document.getElementById('vcDot');
+            countEl.textContent = 'N/A';
+            dotEl.style.background = '#e74c3c';
+            console.warn('[VisitorCounter] Failed to fetch stats:', err);
         }
     }
+
+    // Fetch immediately on page load, then refresh every 60 seconds
     fetchPageViews();
     setInterval(fetchPageViews, 60000);
 })();
