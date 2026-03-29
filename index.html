@@ -203,6 +203,25 @@
             50%  { opacity: 0.4; transform: scale(0.85); }
             100% { opacity: 1; transform: scale(1); }
         }
+
+        .reference-section {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            text-align: justify;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+        .reference-section p {
+            margin: 2px 0;
+        }
+        .reference-section .note {
+            margin-top: 10px;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -260,6 +279,14 @@
                 <tbody></tbody>
             </table>
         </div>
+    </div>
+
+    <!-- 新增参考文献说明模块 -->
+    <div class="reference-section">
+        <p>The model was developed based on the following references:</p>
+        <p>[1].Siqi Lin, Yan-Gang Zhao, Zhao-Hui Lu, Xi-Feng Yan. Unified Theoretical Model for Axially Loaded Concrete-Filled Steel Tube Stub Columns with Different Cross-Sectional Shapes. Journal of Structural Engineering-ASCE, 2021, 147(10): 04021159.</p>
+        <p>[2].Siqi Lin, Yan-Gang Zhao, Zhao-hui Lu. Fibre beam element models for nonlinear analysis of concentrically loaded circular CFT columns considering the size effect. Engineering Structures, 2020, 210: 110400.</p>
+        <p class="note">Note: The model in Ref. [1] was extended by incorporating the slenderness model from Ref. [2], so the model on this webpage also applies to medium and long columns.</p>
     </div>
 
     <!-- Visitor Counter Module -->
